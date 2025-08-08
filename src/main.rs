@@ -11,12 +11,13 @@ use std::os::unix::io::AsRawFd;
 use mio::{Poll,Events,Token,Interest};
 use mio::unix::SourceFd;
 
-static HOTKEY:      EventCode = EventCode::EV_KEY(EV_KEY::BTN_TRIGGER_HAPPY4);
+static HOTKEY:      EventCode = EventCode::EV_KEY(EV_KEY::BTN_TRIGGER_HAPPY5);
 static BRIGHT_UP:   EventCode = EventCode::EV_KEY(EV_KEY::BTN_DPAD_UP);
 static BRIGHT_DOWN: EventCode = EventCode::EV_KEY(EV_KEY::BTN_DPAD_DOWN);
 static VOL_UP:      EventCode = EventCode::EV_KEY(EV_KEY::KEY_VOLUMEUP);
 static VOL_DN:      EventCode = EventCode::EV_KEY(EV_KEY::KEY_VOLUMEDOWN);
 static MUTE:        EventCode = EventCode::EV_KEY(EV_KEY::KEY_PLAYPAUSE);
+static SCREENSHOT:  EventCode = EventCode::EV_KEY(EV_KEY::BTN_TL2);
 
 //static PERF_MAX:    EventCode = EventCode::EV_KEY(EV_KEY::BTN_Z);
 //static PERF_NORM:   EventCode = EventCode::EV_KEY(EV_KEY::BTN_WEST);
@@ -99,6 +100,9 @@ fn process_event(_dev: &Device, ev: &InputEvent, hotkey: bool) {
             Command::new("sudo").arg("wifitoggle.sh").output().expect("Failed to execute wifitoggle.sh");
             //blink1();
         }*/
+        else if ev.event_code == SCREENSHOT && ev.value > 0 {
+            Command::new("screenshot.sh").spawn().ok().expect("Failed to execute shutdown process");
+        }
     }
     else if ev.event_code == EventCode::EV_SW(EV_SW::SW_HEADPHONE_INSERT) {
         let dest = match ev.value { 1 => "SPK", _ => "HP" };
